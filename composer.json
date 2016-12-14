@@ -19,7 +19,7 @@
   "minimum-stability": "stable",
   "require": {
     "php": ">=5.4.0",
-    "houdunwang/xml": "dev-master"
+    "houdunwang/xml": "~1.0"
   },
   "autoload": {
     "files": [],
