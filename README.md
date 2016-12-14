@@ -2,7 +2,13 @@
 
 ##介绍
 
-Response服务是对 http响应的处理。 
+Response服务是对 http响应的处理。
+ 
+##安装
+
+```
+composer require houdunwang/response
+```
 
 ##操作
 
