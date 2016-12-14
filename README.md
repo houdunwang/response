@@ -9,7 +9,8 @@ Response服务是对 http响应的处理。
 ####响应状态码
 
 ```
-Response::sendHttpStatus(404);
+$obj = new \houdunwang\response\Response();
+$obj->sendHttpStatus(404);
 ```
 
 ####发送异步
@@ -26,5 +27,6 @@ type指返回数据类型包括：TEXT XML JSON 默认为JSON
 
 ```
 $data=['name'=>'后盾网','url'=>'houdunwang.com']
-Response::ajax($data);
+$obj = new \houdunwang\response\Response();
+$obj->ajax($data,'xml');
 ```
