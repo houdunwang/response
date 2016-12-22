@@ -19,6 +19,25 @@ composer require houdunwang/response
 $obj = new \houdunwang\response\Response();
 ```
 
+####启动组件
+```
+$obj->bootstrap();
+```
+
+####常量定义
+启动组件后系统会定义一些常量
+
+```
+IS_GET      GET请求
+IS_POST     POST请求
+IS_DELETE   DELETE请求
+IS_PUT      PUT请求
+IS_AJAX     异步请求
+IS_WECHAT   微信客户端请求
+__URL__     当前请求完整URL
+__HISTORY__ 来源地址
+```
+
 ##方法获取
 query 方法支持点语法操作，支持多层数据获取。第一个字符为数据类型。
 

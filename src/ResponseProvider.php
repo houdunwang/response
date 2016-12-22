@@ -17,6 +17,7 @@ class ResponseProvider extends ServiceProvider {
 	public $defer = true;
 
 	public function boot() {
+		\Response::bootstrap();
 	}
 
 	public function register() {
