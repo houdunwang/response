@@ -14,9 +14,6 @@ namespace houdunwang\response;
 use houdunwang\response\build\Base;
 
 class Response {
-	public function __construct() {
-	}
-
 	protected static function link() {
 		static $link = null;
 		if ( is_null( $link ) ) {
@@ -31,6 +28,6 @@ class Response {
 	}
 
 	public static function __callStatic( $name, $arguments ) {
-		return call_user_func_array( [ static::link(), $name ], $arguments );
+		return call_user_func_array( [ self::link(), $name ], $arguments );
 	}
 }
