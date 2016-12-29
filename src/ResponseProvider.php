@@ -9,20 +9,18 @@
  * '-------------------------------------------------------------------*/
 namespace houdunwang\response;
 
-use hdphp\kernel\ServiceProvider;
+use houdunwang\framework\build\Provider;
 
-class ResponseProvider extends ServiceProvider {
-
+class ResponseProvider extends Provider {
 	//延迟加载
 	public $defer = true;
 
 	public function boot() {
-		\Response::bootstrap();
 	}
 
 	public function register() {
-		$this->app->single( 'Response', function ( $app ) {
-			return new Response( $app );
+		$this->app->single( 'Response', function () {
+			return new Response();
 		} );
 	}
 }
