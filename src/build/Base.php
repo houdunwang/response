@@ -7,6 +7,7 @@
  * |    WeChat: aihoudun
  * | Copyright (c) 2012-2019, www.houdunwang.com. All Rights Reserved.
  * '-------------------------------------------------------------------*/
+
 namespace houdunwang\response\build;
 
 use houdunwang\xml\Xml;
@@ -90,10 +91,10 @@ class Base {
 	/**
 	 * Ajax输出
 	 *
-	 * @param array $data 数据
+	 * @param mixed $data 数据
 	 * @param string $type 数据类型 text xml json
 	 */
-	public function ajax( array $data, $type = "JSON" ) {
+	public function ajax( $data, $type = "JSON" ) {
 		switch ( strtoupper( $type ) ) {
 			case "TEXT" :
 				$res = $data;
