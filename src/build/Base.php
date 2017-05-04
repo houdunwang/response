@@ -99,20 +99,24 @@ class Base
             505 => 'HTTP Version Not Supported',
             509 => 'Bandwidth Limit Exceeded',
         ];
-        $this->setCode($status[$code]);
         if (isset($status[$code])) {
+            $this->setCode($status[$code]);
             header('HTTP/1.1 '.$code.' '.$status[$code]);
             header('Status:'.$code.' '.$status[$code]);
+
+            return true;
         }
 
-        return $this;
+        return false;
     }
 
     /**
      * Ajax输出
      *
-     * @param mixed  $data 数据
+     * @param        $data 数据
      * @param string $type 数据类型 text xml json
+     *
+     * @return string
      */
     public function ajax($data, $type = "JSON")
     {
@@ -121,14 +125,19 @@ class Base
                 $res = $data;
                 break;
             case "XML" :
-                header('Content-Type: application/xml');
+                if ( ! headers_sent()) {
+                    header('Content-Type: application/xml');
+                }
                 $res = (new Xml())->toSimpleXml($data);
                 break;
             case 'JSON':
             default :
-                header('Content-Type: application/json');
+                if ( ! headers_sent()) {
+                    header('Content-Type: application/json');
+                }
                 $res = json_encode($data, JSON_UNESCAPED_UNICODE);
         }
-        die($res);
+
+        return $res;
     }
 }
