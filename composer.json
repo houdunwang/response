@@ -1,7 +1,6 @@
 {
   "name": "houdunwang/response",
   "description": "服务器状态码与数据响应组件",
-  "type": "project",
   "keywords": [
     "houdunwang",
     "hdphp",

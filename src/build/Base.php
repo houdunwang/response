@@ -137,7 +137,6 @@ class Base
                 }
                 $res = json_encode($data, JSON_UNESCAPED_UNICODE);
         }
-
-        return $res;
+        die($res);
     }
 }
