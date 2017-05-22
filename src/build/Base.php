@@ -125,18 +125,13 @@ class Base
                 $res = $data;
                 break;
             case "XML" :
-                if ( ! headers_sent()) {
-                    header('Content-Type: application/xml');
-                }
                 $res = (new Xml())->toSimpleXml($data);
                 break;
             case 'JSON':
             default :
-                if ( ! headers_sent()) {
-                    header('Content-Type: application/json');
-                }
                 $res = json_encode($data, JSON_UNESCAPED_UNICODE);
         }
-        die($res);
+
+        return $res;
     }
 }
