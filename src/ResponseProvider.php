@@ -15,7 +15,7 @@ use houdunwang\framework\build\Provider;
 class ResponseProvider extends Provider
 {
     //延迟加载
-    public $defer = true;
+    public $defer = false;
 
     public function boot()
     {
@@ -23,11 +23,8 @@ class ResponseProvider extends Provider
 
     public function register()
     {
-        $this->app->single(
-            'Response',
-            function () {
-                return new Response();
-            }
-        );
+        $this->app->single('Response', function () {
+            return new Response();
+        });
     }
 }

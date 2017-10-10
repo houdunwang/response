@@ -10,19 +10,243 @@
 
 namespace houdunwang\response\build;
 
+use houdunwang\request\Request;
+use houdunwang\route\Route;
+use houdunwang\session\Session;
+use houdunwang\view\View;
 use houdunwang\xml\Xml;
+use houdunwang\config\Config;
 
+/**
+ * Class Base
+ *
+ * @package houdunwang\response\build
+ */
 class Base
 {
-    /**
-     * 状态码
-     *
-     * @var
-     */
+    //响应状态码
     protected $code;
 
-    public function __construct()
+    //响应内容
+    protected $content;
+
+    /**
+     * 设置响应内容
+     *
+     * @param $content
+     *
+     * @return $this
+     */
+    public function setContent($content)
     {
+        $this->content = $content;
+
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getContent()
+    {
+        if (is_array($this->content)) {
+            return json_encode($this->content, JSON_UNESCAPED_UNICODE);
+        }
+
+        return strval($this->content);
+    }
+
+    /**
+     * 直接响应内容
+     *
+     * @param $content
+     *
+     * @return $this
+     */
+    public function make($content)
+    {
+        $this->setContent($content);
+
+        return $this;
+    }
+
+    /**
+     * 跳转链接
+     *
+     * @param string $url
+     * @param array  $args
+     *
+     * @return $this
+     */
+    public function redirect($url = '', $args = [])
+    {
+        if ( ! empty($url)) {
+            switch ($url) {
+                case 'back':
+                    $this->setContent(Request::history());
+                    break;
+                case 'refresh':
+                    $this->setContent(Request::web());
+                    break;
+                default:
+                    $this->controller($url, $args);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * 跳转到路由地址
+     *
+     * @param $route
+     *
+     * @return $this
+     */
+    public function route($route)
+    {
+        $this->setContent(web_url().'/'.$route);
+
+        return $this;
+    }
+
+    /**
+     * 跳转控制器链接
+     *
+     * @param       $path
+     * @param array $args
+     *
+     * @return mixed|string
+     */
+    public function controller($path, $args = [])
+    {
+        if (preg_match('@^http@i', $path)) {
+            $url = $path;
+        } else {
+            $url        = Config::get('http.rewrite') ? root_url()
+                : root_url().'/'.basename($_SERVER['SCRIPT_FILENAME']);
+            $path       = str_replace('.', '/', $path);
+            $controller = Route::getController();
+            if (empty($controller)) {
+                //路由访问模式
+                $url .= '?'.Config::get('http.url_var').'='.$path;
+            } else {
+                $info = explode('\\', $controller);
+                //控制器访问模式
+                switch (count(explode('/', $path))) {
+                    case 2:
+                        $path = $info[1].'/'.$path;
+                        break;
+                    case 1:
+                        $path = $info[1].'/'.$info[3].'/'.$path;
+                        break;
+                }
+
+                $url .= '?'.Config::get('http.url_var').'='.$path;
+            }
+        }
+        //添加参数
+        if ( ! empty($args)) {
+            $url .= '&'.http_build_query($args);
+        }
+        $this->setContent($url);
+
+        return $this;
+    }
+
+    /**
+     * 分配闪存错误信息
+     *
+     * @param $content
+     *
+     * @return mixed
+     */
+    protected function withErrors($content)
+    {
+        $content = is_array($content) ? $content : [$content];
+
+        return Session::flash($content);
+    }
+
+    /**
+     * 返回字符内容
+     *
+     * @return mixed
+     */
+    public function string()
+    {
+        return $this->getContent();
+    }
+
+    public function __toString()
+    {
+        $content = $this->getContent();
+        if (preg_match('/^http(s?):\/\//', $content)) {
+            header('location:'.$content);
+        }
+
+        return $content;
+    }
+
+    /**
+     * 输出404页面
+     *
+     * @return mixed
+     */
+    public function _404()
+    {
+        $this->sendHttpStatus(404);
+        if (RUN_MODE == 'HTTP' && is_file(Config::get('app.404'))) {
+            return View::make(Config::get('app.404'));
+        }
+    }
+
+    /**
+     * 消息提示
+     *
+     * @param        $content  消息内容
+     * @param string $redirect 跳转地址有三种方式 1:back(返回上一页)  2:refresh(刷新当前页)  3:具体Url
+     * @param string $type     信息类型  success(成功），error(失败），warning(警告），info(提示）
+     * @param int    $timeout  等待时间
+     *
+     * @return mixed|string
+     */
+    public function show($content, $redirect = 'back', $type = 'success', $timeout = 2)
+    {
+        $redirect = $redirect ?: 'back';
+        if (Request::isMethod('ajax')) {
+            return $this->setContent(['valid' => $type == 'success' ? 1 : 0, 'message' => $content]);
+        } else {
+            switch ($redirect) {
+                case 'back':
+                    $url = "location.replace('".Request::history()."')";
+                    break;
+                case 'refresh':
+                    $url = "location.replace('".request_url()."')";
+                    break;
+                default:
+                    $this->controller($redirect);
+                    $url = "location.replace('".$this->getContent()."')";
+                    break;
+            }
+            //图标
+            $ico = [
+                'success' => 'fa-check-circle',
+                'error'   => 'fa-times-circle',
+                'info'    => 'fa-info-circle',
+                'warning' => 'fa-warning',
+            ];
+            View::with([
+                'content'  => is_array($content) ? implode('<br/>', $content) : $content,
+                'redirect' => $redirect,
+                'type'     => $type,
+                'url'      => $url,
+                'ico'      => $ico[$type],
+                'timeout'  => $timeout * 1000,
+            ]);
+
+            return View::make(Config::get('app.message'));
+        }
     }
 
     /**
