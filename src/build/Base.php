@@ -196,8 +196,8 @@ class Base
     public function _404()
     {
         $this->sendHttpStatus(404);
-        if (RUN_MODE == 'HTTP' && is_file(Config::get('app.404'))) {
-            return View::make(Config::get('app.404'));
+        if (RUN_MODE == 'HTTP' && is_file(Config::get('app._404'))) {
+            return View::make(Config::get('app._404'));
         }
     }
 
