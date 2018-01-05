@@ -54,12 +54,13 @@ if ( ! function_exists('u')) {
      *
      * @param string $path 模块.动作.方法
      * @param array  $args GET参数
+     * @param bool   $merge
      *
-     * @return mixed|string
+     * @return mixed
      */
-    function u($path, $args = [])
+    function u($path, $args = [], $merge = false)
     {
-        return redirect($path, $args)->string();
+        return redirect($path, $args, $merge)->string();
     }
 }
 if ( ! function_exists('go')) {
@@ -81,14 +82,15 @@ if ( ! function_exists('redirect')) {
     /**
      * 跳转链接
      *
-     * @param string $url back/refresh/控制器
-     * @param array $args 链接参数
+     * @param string $url  back/refresh/控制器
+     * @param array  $args 链接参数
+     * @param bool   $merge
      *
      * @return mixed
      */
-    function redirect($url='', array $args = [])
+    function redirect($url = '', array $args = [], $merge = false)
     {
-        return \houdunwang\response\Response::redirect($url, $args);
+        return \houdunwang\response\Response::redirect($url, $args, $merge);
     }
 }
 
