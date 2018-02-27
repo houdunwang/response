@@ -108,7 +108,7 @@ class Base
      */
     public function route($route)
     {
-        $this->setContent(web_url().'/'.$route);
+        $this->setContent(web_url() . '/' . $route);
 
         return $this;
     }
@@ -127,25 +127,26 @@ class Base
         if (preg_match('@^http@i', $path)) {
             $url = $path;
         } else {
-            $url        = Config::get('http.rewrite') ? root_url() : root_url().'/'.basename($_SERVER['SCRIPT_FILENAME']);
+            $url        = Config::get('http.rewrite') ? root_url()
+                : root_url() . '/' . basename($_SERVER['SCRIPT_FILENAME']);
             $path       = str_replace('.', '/', $path);
             $controller = Route::getController();
             if (empty($controller)) {
                 //路由访问模式
-                $url .= '?'.Config::get('http.url_var').'='.$path;
+                $url .= '?' . Config::get('http.url_var') . '=' . $path;
             } else {
                 $info = explode('\\', $controller);
                 //控制器访问模式
                 switch (count(explode('/', $path))) {
                     case 2:
-                        $path = $info[1].'/'.$path;
+                        $path = $info[1] . '/' . $path;
                         break;
                     case 1:
-                        $path = $info[1].'/'.$info[3].'/'.$path;
+                        $path = $info[1] . '/' . $info[3] . '/' . $path;
                         break;
                 }
 
-                $url .= '?'.Config::get('http.url_var').'='.$path;
+                $url .= '?' . Config::get('http.url_var') . '=' . $path;
             }
         }
         //添加参数
@@ -153,7 +154,7 @@ class Base
             if ($merge) {
                 $args = array_merge($_GET ?: [], $args);
             }
-            $url .= '&'.http_build_query($args);
+            $url .= '&' . http_build_query($args);
         }
         $this->setContent($url);
 
@@ -188,7 +189,7 @@ class Base
     {
         $content = $this->getContent();
         if (preg_match('/^http(s?):\/\//', $content)) {
-            header('location:'.$content);
+            header('location:' . $content);
         }
 
         return $content ?: '';
@@ -225,18 +226,20 @@ class Base
     {
         $redirect = $redirect ?: 'back';
         if (Request::isMethod('ajax')) {
-            return $this->setContent(['valid' => $type == 'success' ? 1 : 0, 'message' => $content]);
+            return $this->setContent(['valid'   => $type == 'success' ? 1 : 0,
+                                      'message' => $content,
+            ]);
         } else {
             switch ($redirect) {
                 case 'back':
-                    $url = "location.replace('".Request::history()."')";
+                    $url = "location.replace('" . Request::history() . "')";
                     break;
                 case 'refresh':
-                    $url = "location.replace('".request_url()."')";
+                    $url = "location.replace('" . request_url() . "')";
                     break;
                 default:
                     $this->controller($redirect);
-                    $url = "location.replace('".$this->getContent()."')";
+                    $url = "location.replace('" . $this->getContent() . "')";
                     break;
             }
             //图标
@@ -335,8 +338,8 @@ class Base
         ];
         if (isset($status[$code])) {
             $this->setCode($status[$code]);
-            header('HTTP/1.1 '.$code.' '.$status[$code]);
-            header('Status:'.$code.' '.$status[$code]);
+            header('HTTP/1.1 ' . $code . ' ' . $status[$code]);
+            header('Status:' . $code . ' ' . $status[$code]);
 
             return true;
         }
