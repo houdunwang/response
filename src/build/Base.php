@@ -202,7 +202,7 @@ class Base
      */
     public function _404($return = false)
     {
-        $this->sendHttpStatus(404);
+//        $this->sendHttpStatus(404);
         if (RUN_MODE == 'HTTP') {
             if ($return) {
                 return View::make(Config::get('app._404'));
